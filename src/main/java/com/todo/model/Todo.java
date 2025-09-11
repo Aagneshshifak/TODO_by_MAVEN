@@ -1,4 +1,4 @@
-package main.java.com.todo.model;
+package com.todo.model;
 import java.time.LocalDateTime;
 public class Todo {
     private int ID;
