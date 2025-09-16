@@ -1,5 +1,5 @@
 package com.todo;
-import com.todo.model.Todo;
+//import com.todo.model.Todo;
 import com.todo.util.DatabaseConnection;
 public class Main {
     public static void main(String[] args) {
