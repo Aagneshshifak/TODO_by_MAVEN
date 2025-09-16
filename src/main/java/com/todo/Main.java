@@ -1,9 +1,15 @@
 package com.todo;
-//import com.todo.model.Todo;
+import com.todo.model.Todo;
+import com.todo.util.DatabaseConnection;
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Welcome to the TODO application!");
-        int a= 6 ,b=9;
-        System.out.println(a+b);
+        DatabaseConnection dbConn = new DatabaseConnection();
+        try {
+            dbConn.getConnection();
+            System.out.println("Database connected successfully.");
+        } catch (Exception e) {
+            System.out.println("Failed to connect to the database.");
+            e.printStackTrace();
+        }
     }
 }

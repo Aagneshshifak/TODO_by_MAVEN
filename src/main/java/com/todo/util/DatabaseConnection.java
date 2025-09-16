@@ -4,9 +4,9 @@ import java.sql.DriverManager;// for jdbc connection
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    public static final String URL = "jdbc:mysql://localhost:3306/todo_app";
+    public static final String URL = "jdbc:mysql://localhost:3306/todo";
     public static final String USERNAME="root";
-    public static final String PASSWORD="Aagnesh@123";
+    public static final String PASSWORD="root@123";
 
     static{
         try {
