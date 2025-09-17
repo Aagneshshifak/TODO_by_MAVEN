@@ -28,6 +28,8 @@ public class TodoAppGUI extends JFrame {
         this.todoAppDAO = new TodoAppDAO();
         initializeComponents();
         setupLayout();
+        setupEventListeners();
+        loadTodos();
     }
 
     public void initializeComponents() {
@@ -71,6 +73,8 @@ public class TodoAppGUI extends JFrame {
 
     private void setupLayout() {
         setLayout(new BorderLayout());
+
+        // Input panel for title, description, completed checkbox
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -81,15 +85,67 @@ public class TodoAppGUI extends JFrame {
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(titleField, gbc);
-        gbc.gridx=0;
-        gbc.gridy =1;
-        inputPanel.add(new JLabel("Description:"), gbc);
-        gbc.gridx =1;
-        inputPanel.add(descriptionArea, gbc);
 
-        gbc.gridx =1;
-        gbc.gridy =2;
-        add(inputPanel, BorderLayout.NORTH);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        inputPanel.add(new JLabel("Description:"), gbc);
+        gbc.gridx = 1;
+        inputPanel.add(new JScrollPane(descriptionArea), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        inputPanel.add(completedCheckBox, gbc);
+
+        // Button panel for Add, Update, Delete, Refresh
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.add(addButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(refreshButton);
+
+        // Filter panel for filter label and combo box
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filterPanel.add(new JLabel("Filter:"));
+        filterPanel.add(filterComboBox);
+
+        // North panel to combine filter, input, and button panels
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.add(filterPanel, BorderLayout.NORTH);
+        northPanel.add(inputPanel, BorderLayout.CENTER);
+        northPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        add(northPanel, BorderLayout.NORTH);
+        add(new JScrollPane(todoTable), BorderLayout.CENTER);
+
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        statusPanel.add(new JLabel("Status:"));
+        add(statusPanel, BorderLayout.SOUTH);
+    }
+
+    private void setupEventListeners() {
+        addButton.addActionListener((e)-> {addTodo();});
+        updateButton.addActionListener((e)-> {updateTodo();});
+        deleteButton.addActionListener((e)-> {deleteTodo();});
+        refreshButton.addActionListener((e)-> {refreshTodo();});
+        filterComboBox.addActionListener((e)-> {filterTodos();});
+    }
+    private void addTodo() {
+
+    }
+    private void updateTodo() {
+
+    }
+    private void deleteTodo() {
+
+    }
+    private void refreshTodo() {
+
+    }
+    private void filterTodos() {
+
+    }
+    private void loadTodos() {
         
     }
 }
