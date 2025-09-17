@@ -1,49 +1,82 @@
 package com.todo.gui;
-import javax.print.attribute.standard.JobMessageFromOperator;
-import javax.swing.*;// for GUI components 
-import javax.swing.table.DefaultTableModel;// for table model
-import java.awt.*;// for layout managers and event handling
-import java.awt.event.ActionEvent;// for action listeners
-import java.awt.event.ActionListener;// for action listeners
-import java.util.List;// for list of todos
-import java.sql.SQLException;// for sql exceptions
-import com.todo.model.Todo;// for todo model 
-import com.todo.dao.TodoAppDAO;// for todo dao
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import com.todo.dao.TodoAppDAO;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import com.todo.model.Todo;
+import com.todo.util.DatabaseConnection;
+import java.sql.SQLException;
 
 public class TodoAppGUI extends JFrame {
-    private TodoAppDAO todoDAO;// for connecting to ui and dao
-    private JFrame todoTable;// main frame
-    private DefaultTableModel tableModel;// table model
-    private JTextField titleField;// title field
-    private JTextArea descriptionArea;// description area
-    private JCheckBox completedCheckBox;// completed checkbox
-    private JButton addButton;// add button
-    private JButton updateButton;// update button
-    private JButton deleteButton;// delete button
-    private JButton refreshButton;// refresh button
-    private JComboBox<String> filterComboBox;// filter combobox
+    private TodoAppDAO todoAppDAO;
+    private JTable todoTable;
+    private DefaultTableModel tableModel;
+    private JTextField titleField;
+    private JTextArea descriptionArea;
+    private JCheckBox completedCheckBox;
+    private JButton addButton;
+    private JButton updateButton;
+    private JButton deleteButton;
+    private JButton refreshButton;
+    private JComboBox<String> filterComboBox;
 
     public TodoAppGUI() {
-        this.todoDAO = new TodoAppDAO();
-        initialize();
+        this.todoAppDAO = new TodoAppDAO();
+        initializeComponents();
+        setupLayout();
     }
-    private void initialize(){
+
+    public void initializeComponents() {
         setTitle("Todo Application");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
-
         String[] columnNames = {"ID", "Title", "Description", "Completed", "Created At", "Updated At"};
-        tableModel = new DefaultTableModel(columnNames, 0){
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return false;
             }
         };
-         todoTable = new JTable(tableModel);
-         todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-         todoTable.getSelectionModel().addListSelectionListener();
+        todoTable = new JTable(tableModel);
+        todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        todoTable.getSelectionModel().addListSelectionListener(
+            (e) -> {
+                if (!e.getValueIsAdjusting()) {
+                    //loadSelectedTodo();
+                }
+            }
+        );
+        titleField = new JTextField(20);
+        descriptionArea = new JTextArea(3, 20);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        completedCheckBox = new JCheckBox("Completed");
+        addButton = new JButton("Add Todo");
+        updateButton = new JButton("Update Todo");
+        deleteButton = new JButton("Delete Todo");
+        refreshButton = new JButton("Refresh Todo");
+        String[] filterOptions = {"All", "Completed", "Pending"};
+        filterComboBox = new JComboBox<>(filterOptions);
+        filterComboBox.addActionListener(
+            (e) -> {
+                //filterTodos();
+            }
+        );
+    }
 
-
+    private void setupLayout() {
+        setLayout(new BorderLayout());
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        inputPanel.add(titleField, gbc);
     }
 }
