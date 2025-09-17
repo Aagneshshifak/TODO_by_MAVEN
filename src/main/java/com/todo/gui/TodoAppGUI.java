@@ -10,6 +10,8 @@ import java.util.List;
 import com.todo.model.Todo;
 import com.todo.util.DatabaseConnection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TodoAppGUI extends JFrame {
     private TodoAppDAO todoAppDAO;
@@ -146,6 +148,10 @@ public class TodoAppGUI extends JFrame {
 
     }
     private void loadTodos() {
-        
+        try {
+            List<Todo> todos = todoAppDAO.getAllTodos();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
