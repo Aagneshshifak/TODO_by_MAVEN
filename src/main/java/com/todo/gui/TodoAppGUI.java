@@ -77,6 +77,19 @@ public class TodoAppGUI extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        inputPanel.add(new JLabel("Title:"), gbc);
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(titleField, gbc);
+        gbc.gridx=0;
+        gbc.gridy =1;
+        inputPanel.add(new JLabel("Description:"), gbc);
+        gbc.gridx =1;
+        inputPanel.add(descriptionArea, gbc);
+
+        gbc.gridx =1;
+        gbc.gridy =2;
+        add(inputPanel, BorderLayout.NORTH);
+        
     }
 }
