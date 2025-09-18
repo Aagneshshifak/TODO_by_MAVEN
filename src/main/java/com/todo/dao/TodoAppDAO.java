@@ -1,31 +1,34 @@
 package com.todo.dao;
-import java.sql.SQLException;
 import com.todo.model.Todo;
-import com.todo.util.*;
-import java.util.*;
+import com.todo.util.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDateTime;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TodoAppDAO {
-    private Todo getTodorow(ResultSet rs) throws SQLException{
-        int id = rs.getInt("ID");
-        String title = rs.getString("Title");
-        String description = rs.getString("Description");
-        boolean completed = rs.getBoolean("Completed");
-        LocalDateTime createdAt = rs.getTimestamp("Created_at").toLocalDateTime();
-        LocalDateTime updatedAt = rs.getTimestamp("Updated_at").toLocalDateTime();
-        return new Todo(id, title, description, completed, createdAt, updatedAt);
+    private Todo getTodoRow(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String title = rs.getString("title");
+        String description = rs.getString("description");
+        boolean completed = rs.getBoolean("completed");
+        java.sql.Timestamp created_at = rs.getTimestamp("created_at");
+        java.sql.Timestamp updated_at = rs.getTimestamp("updated_at");
+        return new Todo(id, title, description, completed, created_at.toLocalDateTime(), updated_at.toLocalDateTime());
     }
-    public List<Todo> getAllTodos() throws SQLException{
+    public List<Todo> getAllTodos() throws SQLException {
         List<Todo> todos = new ArrayList<>();
-        try(Connection conn = new DatabaseConnection().getDBConnection();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM todos ORDER BY created_at DESC");
-        ResultSet rs = stmt.executeQuery();
-        ){
+        DatabaseConnection dbConn = new DatabaseConnection();
+        try (
+            Connection conn = dbConn.getDBConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM todos ORDER BY created_at DESC");
+            ResultSet rs = stmt.executeQuery()
+        ) {
             while (rs.next()) {
-                todos.add(getTodorow(rs));
+                todos.add(getTodoRow(rs));
+                
             }
         }
         return todos;

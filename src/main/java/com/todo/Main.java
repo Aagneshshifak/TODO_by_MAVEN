@@ -11,9 +11,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class Main {
     public static void main(String[] args) {
-        DatabaseConnection dbConn = new DatabaseConnection();
         try {
-            dbConn.getConnection();
+            DatabaseConnection.getDBConnection();
             System.out.println("Database connected successfully.");
         } catch (Exception e) {
             System.out.println("Failed to connect to the database.");

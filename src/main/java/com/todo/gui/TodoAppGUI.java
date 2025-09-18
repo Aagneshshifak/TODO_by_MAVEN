@@ -10,8 +10,6 @@ import java.util.List;
 import com.todo.model.Todo;
 import com.todo.util.DatabaseConnection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TodoAppGUI extends JFrame {
     private TodoAppDAO todoAppDAO;
@@ -31,7 +29,7 @@ public class TodoAppGUI extends JFrame {
         initializeComponents();
         setupLayout();
         setupEventListeners();
-        loadTodos();
+        loadTodos(); // <-- Fixed typo: was 'LoadTodos()'
     }
 
     public void initializeComponents() {
@@ -119,45 +117,49 @@ public class TodoAppGUI extends JFrame {
 
         add(northPanel, BorderLayout.NORTH);
         add(new JScrollPane(todoTable), BorderLayout.CENTER);
-
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        statusPanel.add(new JLabel("Status:"));
+        statusPanel.add(new JLabel("Select a todo to edit or delete:"));
         add(statusPanel, BorderLayout.SOUTH);
     }
 
     private void setupEventListeners() {
-        addButton.addActionListener((e)-> {addTodo();});
-        updateButton.addActionListener((e)-> {updateTodo();});
-        deleteButton.addActionListener((e)-> {deleteTodo();});
-        refreshButton.addActionListener((e)-> {refreshTodo();});
-        filterComboBox.addActionListener((e)-> {filterTodos();});
+        addButton.addActionListener(
+            (e) ->{addTodo();});
+        updateButton.addActionListener(
+            (e) ->{updateTodo();});
+        deleteButton.addActionListener(
+            (e) ->{deleteTodo();});
+        refreshButton.addActionListener(
+            (e) ->{refreshTodo();});
     }
-    private void addTodo() {
+
+    private void addTodo(){
 
     }
-    private void updateTodo() {
+    private void updateTodo(){
 
     }
-    private void deleteTodo() {
+    private void deleteTodo(){
 
     }
-    private void refreshTodo() {
-
+    private void refreshTodo(){
+        loadTodos();
     }
-    private void filterTodos() {
-
-    }
-    private void loadTodos() {
+    private void loadTodos(){
         try {
             List<Todo> todos = todoAppDAO.getAllTodos();
+            updateTable(todos);
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error loading todos: " + e.getMessage(), 
+                                        "Database Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
-    private void updateTable(List<Todo> todos) {
+    private void updateTable(List<Todo> todos){
         tableModel.setRowCount(0);
-        for (Todo todo : todos) {
-            tableModel.addRow(new Object[]{todo.getID(), todo.getTitle(), todo.getDescription(), todo.isCompleted(), todo.getCreated_at(), todo.getUpdated_at()});
+        for(Todo todo : todos){
+            Object[] row = {todo.getID(), todo.getTitle(), todo.getDescription(), todo.isCompleted(), todo.getCreated_at(), todo.getUpdated_at()};
+            tableModel.addRow(row);
         }
     }
 }
