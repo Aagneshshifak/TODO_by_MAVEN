@@ -15,7 +15,7 @@ public class DatabaseConnection {
             System.out.println("MySQL JDBC Driver not found!");
         }
     }
-    public  Connection getConnection() throws SQLException{
+    public static Connection getDBConnection() throws SQLException{
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
 }

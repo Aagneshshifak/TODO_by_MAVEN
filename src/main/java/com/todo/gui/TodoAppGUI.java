@@ -154,4 +154,10 @@ public class TodoAppGUI extends JFrame {
             e.printStackTrace();
         }
     }
+    private void updateTable(List<Todo> todos) {
+        tableModel.setRowCount(0);
+        for (Todo todo : todos) {
+            tableModel.addRow(new Object[]{todo.getID(), todo.getTitle(), todo.getDescription(), todo.isCompleted(), todo.getCreated_at(), todo.getUpdated_at()});
+        }
+    }
 }
