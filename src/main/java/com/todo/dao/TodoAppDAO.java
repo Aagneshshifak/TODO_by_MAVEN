@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
+
 public class TodoAppDAO {
     public List<Todo> getAllTodos() throws SQLException{
         List<Todo> todos = new ArrayList<>();
@@ -25,7 +26,6 @@ public class TodoAppDAO {
                 todo.setCreated_at(createdAt);
                 todo.setUpdated_at(updatedAt);
                 todos.add(todo);
-    
             }
         }
         return todos;
