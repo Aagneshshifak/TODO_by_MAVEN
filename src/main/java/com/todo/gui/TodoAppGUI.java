@@ -3,10 +3,15 @@ package com.todo.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import com.todo.model.Todo;
 import com.todo.dao.TodoAppDAO;
+import com.todo.util.DatabaseConnection;
+
 import java.util.Date;
 
 public class TodoAppGUI extends JFrame {
@@ -45,24 +50,6 @@ public class TodoAppGUI extends JFrame {
 
         todoTable = new JTable(tableModel);
         todoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
-        // Add selection listener
-        todoTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                loadSelectedTodo();
-            }
-        });
-        
-        // Add mouse click listener
-        todoTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int row = todoTable.rowAtPoint(evt.getPoint());
-                if (row >= 0) {
-                    todoTable.setRowSelectionInterval(row, row);
-                    loadSelectedTodo();
-                }
-            }
-        });
 
         // Inputs
         titleField = new JTextField(25);
@@ -136,15 +123,19 @@ public class TodoAppGUI extends JFrame {
     }
 
     private void setupEventListeners() {
-        addButton.addActionListener(
-                (e) ->{addTodo();});
-        editButton.addActionListener(
-                (e) ->{updateTodo();});
-        deleteButton.addActionListener(
-                (e) ->{deleteTodo();});
-        refreshButton.addActionListener(
-                (e) ->{refreshTodo();});
+        addButton.addActionListener(e -> addTodo());
+        editButton.addActionListener(e -> updateTodo());
+        deleteButton.addActionListener(e -> deleteTodo());
+        refreshButton.addActionListener(e -> refreshTodo());
+
+        // ✅ Add this listener
+        todoTable.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                loadSelectedTodo();
+            }
+        });
     }
+
 
     private void addTodo(){
         String title = titleField.getText().trim();
@@ -157,7 +148,7 @@ public class TodoAppGUI extends JFrame {
         try {
             Todo todo = new Todo(title,description);
             todo.setCompleted(completed);
-             todoAppDAO.addTodo(todo);
+            todoAppDAO.createtodo(todo);
 
             JOptionPane.showMessageDialog(this,"Todo added succesfully","Success",JOptionPane.INFORMATION_MESSAGE);
             loadTodos();
@@ -167,21 +158,42 @@ public class TodoAppGUI extends JFrame {
         }
     }
 
-    private void updateTodo(){
-        int selectedRow = todoTable.getSelectedRow();
-        if(selectedRow < 0){
-            JOptionPane.showMessageDialog(this,"Please select a row to update","Validation",JOptionPane.WARNING_MESSAGE);
+    private void updateTodo() {
+        int row = todoTable.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a row to update", "Validation", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        int id = (int) tableModel.getValueAt(row, 0);
         String title = titleField.getText().trim();
         String description = descriptionArea.getText().trim();
-        if(title.isEmpty() || description.isEmpty()) {
+        boolean completed = completedCheckBox.isSelected();
+
+        if (title.isEmpty() || description.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Title or Description is empty!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        int id = (int)todoTable.getValueAt(selectedRow, 0);
 
+        try {
+            Todo todo = todoAppDAO.getTodoById(id);
+            if (todo != null) {
+                todo.setTitle(title);
+                todo.setDescription(description);
+                todo.setCompleted(completed);
+                todo.setUpdated_at(java.time.LocalDateTime.now());
+
+                if (todoAppDAO.updateTodo(todo)) {
+                    JOptionPane.showMessageDialog(this, "Todo updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    loadTodos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Update failed", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-
     private void deleteTodo(){
 
     }

@@ -30,6 +30,9 @@ public class Todo {
     public int getID() {
         return ID;
     }
+    public int getId() {
+        return ID;
+    }
     public void setID(int iD) {
         ID = iD;
     }
