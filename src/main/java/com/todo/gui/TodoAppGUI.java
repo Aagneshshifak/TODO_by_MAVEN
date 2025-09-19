@@ -21,7 +21,7 @@ public class TodoAppGUI extends JFrame {
     private JTextField titleField;
     private JTextArea descriptionArea;
     private JCheckBox completedCheckBox;
-    private JButton addButton, deleteButton, editButton, refreshButton;
+    private JButton addButton, deleteButton, updateButton, refreshButton;
     private JComboBox<String> categoryComboBox;
 
     public TodoAppGUI() {
@@ -64,7 +64,7 @@ public class TodoAppGUI extends JFrame {
         // Buttons
         addButton = new JButton("Add");
         deleteButton = new JButton("Delete");
-        editButton = new JButton("Edit");
+        updateButton = new JButton("Edit");
         refreshButton = new JButton("Refresh");
 
         // Filter dropdown
@@ -100,7 +100,7 @@ public class TodoAppGUI extends JFrame {
         // Button panel for Add, Update, Delete, Refresh
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
+        buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
 
@@ -124,7 +124,7 @@ public class TodoAppGUI extends JFrame {
 
     private void setupEventListeners() {
         addButton.addActionListener(e -> addTodo());
-        editButton.addActionListener(e -> updateTodo());
+        updateButton.addActionListener(e -> updateTodo());
         deleteButton.addActionListener(e -> deleteTodo());
         refreshButton.addActionListener(e -> refreshTodo());
 
@@ -195,7 +195,19 @@ public class TodoAppGUI extends JFrame {
         }
     }
     private void deleteTodo(){
-
+        int row = todoTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(this, "Please select a row to delete", "Validation", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int id = (int) tableModel.getValueAt(row, 0);
+        try{
+            todoAppDAO.deleteTodo(id);
+            JOptionPane.showMessageDialog(this, "Todo deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        loadTodos();
     }
     private void refreshTodo(){
         loadTodos();
