@@ -26,7 +26,6 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 TodoAppGUI gui = new TodoAppGUI();
-                gui.initializeComponents();
                 gui.setVisible(true);
             } catch (Exception e) {
                 System.err.println("Failed to create and display the GUI." + e.getMessage());
