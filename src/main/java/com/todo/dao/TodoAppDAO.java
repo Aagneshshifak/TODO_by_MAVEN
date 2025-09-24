@@ -13,14 +13,42 @@ public class TodoAppDAO {
     private static final String SELECT_TODO_BY_ID = "SELECT * FROM todos WHERE id = ?";
     private static final String UPDATE_TODO = "UPDATE todos SET title = ?, description = ?, completed = ?, updated_at = ? WHERE id = ?";
     private static final String DELETE_TODO = "DELETE FROM todos WHERE id = ?";
+    private static final String SELECT_ALL_COMPLETED_TODOS = "SELECT * FROM todos WHERE completed = true";
+    private static final String SELECT_ALL_PENDING_TODOS = "SELECT * FROM todos WHERE completed = false";
 
+    public List<Todo> getAllCompletedTodos() throws SQLException {
+        List<Todo> todos = new ArrayList<>();
+        try (
+                Connection conn = DatabaseConnection.getDBConnection();
+                PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_COMPLETED_TODOS);
+                ResultSet res = stmt.executeQuery()
+            ) {
+                while (res.next()) {
+                    todos.add(getTodoRow(res));
+                }
+            }
+        return todos;
+    }
+    public List<Todo> getAllPendingTodos() throws SQLException {
+        List<Todo> todos = new ArrayList<>();
+        try (
+                Connection conn = DatabaseConnection.getDBConnection();
+                PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_PENDING_TODOS);
+                ResultSet res = stmt.executeQuery()
+            ) {
+                while (res.next()) {
+                    todos.add(getTodoRow(res));
+                }
+            }
+        return todos;
+    }
     public boolean deleteTodo(int ID) throws SQLException {
         try (
                 Connection conn = DatabaseConnection.getDBConnection();
                 PreparedStatement stmt = conn.prepareStatement(DELETE_TODO);
             ) {
                 stmt.setInt(1, ID);
-                return stmt.executeUpdate() > 0 ;
+                return stmt.executeUpdate() > 0;
             }
         }
 

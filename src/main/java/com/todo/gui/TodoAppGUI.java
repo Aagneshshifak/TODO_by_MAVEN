@@ -22,7 +22,7 @@ public class TodoAppGUI extends JFrame {
     private JTextArea descriptionArea;
     private JCheckBox completedCheckBox;
     private JButton addButton, deleteButton, updateButton, refreshButton;
-    private JComboBox<String> categoryComboBox;
+    private JComboBox<String> filterComboBox;
 
     public TodoAppGUI() {
         todoAppDAO = new TodoAppDAO();
@@ -68,8 +68,9 @@ public class TodoAppGUI extends JFrame {
         refreshButton = new JButton("Refresh");
 
         // Filter dropdown
-        String[] categoryOptions = {"All", "Completed", "Pending"};
-        categoryComboBox = new JComboBox<>(categoryOptions);
+        String[] filterOptions = {"All", "Completed", "Pending"};
+        filterComboBox = new JComboBox<>(filterOptions);
+        
     }
     private void setupComponents() {
         setLayout(new BorderLayout());
@@ -107,7 +108,7 @@ public class TodoAppGUI extends JFrame {
         // Filter panel for filter label and combo box
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.add(new JLabel("Filter:"));
-        filterPanel.add(categoryComboBox);
+        filterPanel.add(filterComboBox);
 
         // North panel to combine filter, input, and button panels
         JPanel northPanel = new JPanel(new BorderLayout());
@@ -127,16 +128,20 @@ public class TodoAppGUI extends JFrame {
         updateButton.addActionListener(e -> updateTodo());
         deleteButton.addActionListener(e -> deleteTodo());
         refreshButton.addActionListener(e -> refreshTodo());
-
-        // ✅ Add this listener
-        todoTable.getSelectionModel().addListSelectionListener(event -> {
-            if (!event.getValueIsAdjusting()) {
-                loadSelectedTodo();
-            }
-        });
+        filterComboBox.addActionListener(e -> filterTodo());
     }
-
-
+    private void filterTodo(){
+        String filter = filterComboBox.getSelectedItem().toString();
+        if(filter.equals("Completed")){
+            loadCompletedTodos();
+        }
+        else if(filter.equals("Pending")){
+            loadPendingTodos();
+        }
+        else{
+            loadAllTodos();
+        }
+    }
     private void addTodo(){
         String title = titleField.getText().trim();
         String description = descriptionArea.getText().trim();
@@ -202,12 +207,21 @@ public class TodoAppGUI extends JFrame {
         }
         int id = (int) tableModel.getValueAt(row, 0);
         try{
-            todoAppDAO.deleteTodo(id);
+
+            if(todoAppDAO.deleteTodo(id)== true){
             JOptionPane.showMessageDialog(this, "Todo deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
+            titleField.setText("");
+            descriptionArea.setText("");
+            completedCheckBox.setSelected(false);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Todo deletion failed", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (SQLException e){
             JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        loadTodos();
+        }loadTodos();
+        
     }
     private void refreshTodo(){
         loadTodos();
@@ -222,22 +236,44 @@ public class TodoAppGUI extends JFrame {
             e.printStackTrace();
         }
     }
+   private void loadCompletedTodos(){
+    try{
+    List<Todo> todos = todoAppDAO.getAllCompletedTodos();
+    updateTable(todos);
+   }
+   catch(SQLException e){
+    JOptionPane.showMessageDialog(this, "Error loading completed todos: " + e.getMessage(),
+    "Database Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+   }
+}
+private void loadPendingTodos(){
+    try{
+    List<Todo> todos = todoAppDAO.getAllPendingTodos();
+    updateTable(todos);
+   }
+   catch(SQLException e){
+    JOptionPane.showMessageDialog(this, "Error loading pending todos: " + e.getMessage(),
+    "Database Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+   }
+}
+private void loadAllTodos(){
+    try{
+    List<Todo> todos = todoAppDAO.getAllTodos();
+    updateTable(todos);
+   }
+   catch(SQLException e){
+    JOptionPane.showMessageDialog(this, "Error loading all todos: " + e.getMessage(),
+    "Database Error", JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace();
+   }
+}
     private void updateTable(List<Todo> todos){
         tableModel.setRowCount(0);
         for(Todo todo : todos){
             Object[] row = {todo.getID(), todo.getTitle(), todo.getDescription(), todo.isCompleted(), todo.getCreated_at(), todo.getUpdated_at()};
             tableModel.addRow(row);
-        }
-    }
-    private void loadSelectedTodo(){
-        int row  = todoTable.getSelectedRow();
-        if(row >= 0){
-            String title = tableModel.getValueAt(row, 1).toString();
-            String description = tableModel.getValueAt(row, 2).toString();
-            boolean completed = Boolean.parseBoolean(tableModel.getValueAt(row, 3).toString());
-            titleField.setText(title);
-            descriptionArea.setText(description);
-            completedCheckBox.setSelected(completed);
         }
     }
 }

@@ -27,10 +27,7 @@ public class Todo {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
-    public int getID() {
-        return ID;
-    }
-    public int getId() {
+    public int getID(){
         return ID;
     }
     public void setID(int iD) {
